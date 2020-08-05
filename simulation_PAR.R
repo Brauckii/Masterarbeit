@@ -504,12 +504,17 @@ show_calc_PAR_withKI <- function(n, M, pE, rho, IA = 0){
   
 }
 
-reps = 200
-git_KI <- as.matrix(expand.grid("n" = c(50,100,1000) ,"M" = 3:5, "pE" = c(0.1,0.25,0.5), "rho" = seq(0,0.5,0.25)))
+repls = 200
+git_KI <- as.matrix(expand.grid("n" = c(50,100,1000) ,"M" = 3:5, "pE" = c(0.1,0.25,0.5), "rho" = seq(0,0.5,0.25), repl = seq_len(repls)))
 # set.seed(28012506)
-Res_CalcPAR_withKI <- btlapply(seq_len(reps), function(i) do.call(bind_rows, apply(git_all,1,function(y) show_calc_PAR_withKI(n = y[1], M = y[2], pE = y[3], rho = y[4]))), reg = reg)
-Res_CalcPAR_withKI <- do.call(bind_rows, Res_CalcPAR_withKI)
+# repl ist gibt die Wiederholung an quasi SIM_ID
+batchMap(show_calc_PAR_withKI, n = git_KI$n, M = git_KI$M, pE = git_KI$pE, rho = git_KI$rho)
 
+res = list(measure.memory = TRUE)
+submitJobs(reg = reg, resources = res)
+
+Result <- reduceResultsList(fun = as.data.frame, reg = reg)
+KI_result <- do.call(rbind, Result)
 
 ### Laufzeitanalyse 
 
@@ -519,38 +524,48 @@ show_runtime_sys.time <- function(n,M){
   
   simdat <- dat_sim(n, M, pE = 0.25, rho = 0, simulation = TRUE)
   
+  # fmla aus der Datensimulation ist fuer den Algorithmus aus dem pARtial Paket unbrauchbar
+  fmla = paste("D ~ ", paste(colnames(simdat$E), collapse = "+"))
+  
   runtime_PAR_rbn <- system.time(PAR_rbn(simdat))[3]
   
-  runtime_PAR_partial <- system.time(PAR_partial(simdat))[3]
+  runtime_PAR_partial <- system.time(pARtial::PartialAR(D = simdat$D, x = simdat$E, model = TRUE, fmla = fmla))[3]
   
   runtime_PAR_rbn_mf <- system.time(PAR_rbn(simdat, model = FALSE))[3]
   
-  runtime_PAR_partial_mf <- system.time(PAR_partial(simdat, model = NULL))[3]
+  runtime_PAR_partial_mf <- system.time(pARtial::PartialAR(D = simdat$D, x = simdat$E, model = NULL))[3]
   
-  runtime <- c(runtime_PAR_rbn, runtime_PAR_partial, runtime_PAR_rbn_mf, runtime_PAR_partial_mf)
+  runtime <- c(n,M,runtime_PAR_rbn, runtime_PAR_partial, runtime_PAR_rbn_mf, runtime_PAR_partial_mf)
   
   return(runtime)
   
 }
 
 
-git_1 <- as.matrix(expand.grid("n" = 100 , "M" = c(3,4,6,8,10,12,14)))
-git_2 <- as.matrix(expand.grid("n" = c(50,100,500,1000,5000,10000,1E5), "M" = 6))
+repls = 100
+git_1 <- expand.grid("n" = 100 , "M" = c(3,4,6,8,10,12,14), repl = seq_len(repls))
+git_2 <- expand.grid("n" = c(50,100,500,1000,5000,10000,1E5), "M" = 6, repl = seq_len(repls))
 git_runtime <- rbind(git_1, git_2)
 rm(git_1)
 rm(git_2)
 
-reps <- 100 
-Runtime_CalcPAR_systime <- btlapply(seq_len(reps), function(i) cbind(git_runtime, t(apply(git_runtime, 1, function(y) show_runtime_sys.time(n = y[1], M = y[2])))), reg = reg)
-Runtime_CalcPAR_systime <- do.call(rbind, Runtime_CalcPAR_systime)
-Runtime_CalcPAR_systime <- set_names(as_tibble(Runtime_CalcPAR_systime), c("n","M", "runtime_PAR_rbn", "runtime_PAR_partial", "runtime_PAR_rbn_mf", "runtime_PAR_partial_mf"))
+batchMap(show_runtime_sys.time, n = git_runtime$n, M = git_runtime$M)
 
+# Parallelisieren!
 res = list(measure.memory = TRUE)
-
 submitJobs(reg = reg, resources = res)
 
-# Speichern der Daten
-save(Res_CalcPAR_withKI, file = "ResultswithKI.Rdata")
+# An der Stelle weiß ich nicht was richtig ist!!!
+Result <- reduceResultsList(fun = as.data.frame, reg = reg)
+Runtime_result <- do.call(rbind, Result)
+
+Runtime_result <- set_names(as_tibble(Runtime_result), c("n","M", "runtime_PAR_rbn", "runtime_PAR_partial", "runtime_PAR_rbn_mf", "runtime_PAR_partial_mf"))
+
+
 
 # Speichern der Daten
-save(Runtime_CalcPAR_systime, file = "runtime_systime.Rdata")
+save(KI_result, file = "KI_result.Rdata")
+
+# Speichern der Daten
+save(Runtime_result, file = "Runtime_result.Rdata")
+
