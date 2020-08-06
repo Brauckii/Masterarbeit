@@ -551,18 +551,12 @@ git_runtime <- rbind(git_1, git_2)
 rm(git_1)
 rm(git_2)
 
-runtime_fct <- function(i){
-  index <- which(git_KI$repl == i)
-  parallelMap::parallelMap(show_runtime_sys.time, n = git_KI$n[index], M = git_KI$M[index])
-}
-
-batchMap(runtime_fct, i = seq_len(repls))
+batchMap(show_runtime_sys.time, n = git_KI$n, M = git_KI$M)
 
 # Parallelisieren!
-res = list(measure.memory = TRUE, pm.backend = "multicore", ncpus = 50)
+res = list(measure.memory = TRUE)
 submitJobs(reg = reg, resources = res)
 
-# An der Stelle weiß ich nicht was richtig ist!!!
 Result <- reduceResultsList(fun = as.data.frame, reg = reg)
 Runtime_result <- do.call(rbind, Result)
 
