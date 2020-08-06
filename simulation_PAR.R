@@ -543,9 +543,6 @@ show_runtime_sys.time <- function(n,M){
   
 }
 
-runtime_fct <- function(n,M){
-  parallelMap::parallelMap(runtime_fct, n = n, M = M)
-}
 
 repls = 100
 git_1 <- expand.grid("n" = 100 , "M" = c(3,4,6,8,10,12,14), repl = seq_len(repls))
@@ -554,7 +551,12 @@ git_runtime <- rbind(git_1, git_2)
 rm(git_1)
 rm(git_2)
 
-batchMap(runtime_fct, n = git_runtime$n, M = git_runtime$M)
+runtime_fct <- function(i){
+  index <- which(git_KI$repl == i)
+  parallelMap::parallelMap(show_runtime_sys.time, n = git_KI$n[index], M = git_KI$n[index])
+}
+
+batchMap(runtime_fct, i = seq_len(repls))
 
 # Parallelisieren!
 res = list(measure.memory = TRUE, pm.backend = "multicore", ncpus = 20)
