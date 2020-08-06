@@ -553,13 +553,13 @@ rm(git_2)
 
 runtime_fct <- function(i){
   index <- which(git_KI$repl == i)
-  parallelMap::parallelMap(show_runtime_sys.time, n = git_KI$n[index], M = git_KI$n[index])
+  parallelMap::parallelMap(show_runtime_sys.time, n = git_KI$n[index], M = git_KI$M[index])
 }
 
 batchMap(runtime_fct, i = seq_len(repls))
 
 # Parallelisieren!
-res = list(measure.memory = TRUE, pm.backend = "multicore", ncpus = 20)
+res = list(measure.memory = TRUE, pm.backend = "multicore", ncpus = 50)
 submitJobs(reg = reg, resources = res)
 
 # An der Stelle weiß ich nicht was richtig ist!!!
