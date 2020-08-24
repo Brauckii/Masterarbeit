@@ -45,7 +45,7 @@ git_KI <- as.matrix(expand.grid("n" = c(50,100,1000) ,"M" = 3:5, "pE" = c(0.1,0.
 batchMap(show_calc_PAR_withKI, n = git_KI$n, M = git_KI$M, pE = git_KI$pE, rho = git_KI$rho)
 
 #res = list(measure.memory = TRUE, partition =  "short", walltime = 3600)
-submitJobs(reg = reg, resources = default.resources)
+submitJobs(reg = reg)
 
 waitForJobs()
 
