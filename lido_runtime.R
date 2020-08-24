@@ -40,7 +40,7 @@ rm(git_2)
 batchMap(show_runtime_sys.time, n = git_runtime$n, M = git_runtime$M)
 
 # res = list(measure.memory = TRUE, partition =  "short", walltime = 7200)
-submitJobs(reg = reg, resources = default.resources)
+submitJobs(reg = reg)
 
 waitForJobs()
 
