@@ -47,7 +47,7 @@ batchMap(show_calc_PAR_withKI, n = git_KI$n, M = git_KI$M, pE = git_KI$pE, rho =
 #res = list(measure.memory = TRUE, partition =  "short", walltime = 3600)
 submitJobs(reg = reg)
 
-waitForJobs()
+waitForJobs(reg = reg)
 
 Result <- reduceResultsList(fun = as.data.frame, reg = reg)
 KI_result <- do.call(rbind, Result)
