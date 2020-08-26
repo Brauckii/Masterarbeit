@@ -42,7 +42,7 @@ batchMap(show_runtime_sys.time, n = git_runtime$n, M = git_runtime$M)
 # res = list(measure.memory = TRUE, partition =  "short", walltime = 7200)
 submitJobs(reg = reg)
 
-waitForJobs()
+waitForJobs(reg = reg)
 
 # An der Stelle weiß ich nicht was richtig ist!!!
 Result <- reduceResultsList(fun = as.data.frame, reg = reg)
