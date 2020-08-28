@@ -4,7 +4,7 @@
 
 source(file = "Functions.R")
 
-reg = makeRegistry(file.dir = NA)
+reg = makeRegistry(file.dir = "~/nobackup/bt_runtime")
 
 show_runtime_sys.time <- function(n,M){
   

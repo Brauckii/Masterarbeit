@@ -1,21 +1,25 @@
 ##### R-Code mit allen wichtigen Funktionen; gedacht fuer den Durchlauf auf dem LiDO3
 
+inst_packages = installed.packages()[,1]
+inst_if_missing = function(x, ...) {
+  if (!(x %in% inst_packages)) install.packages(x, ...)
+}
 ### Pakete laden
-if(length(which(installed.packages()[,1] == "e1071")) == 0) install.packages("e1071")
-if(length(which(installed.packages()[,1] == "mvtnorm")) == 0) install.packages("mvtnorm")
-if(length(which(installed.packages()[,1] == "tidyverse")) == 0) install.packages("tidyverse")
-if(length(which(installed.packages()[,1] == "rockchalk")) == 0) install.packages("rockchalk")
-if(length(which(installed.packages()[,1] == "boot")) == 0) install.packages("boot")
-if(length(which(installed.packages()[,1] == "broom")) == 0) install.packages("broom")
+inst_if_missing("e1071")
+inst_if_missing("mvtnorm")
+inst_if_missing("tidyverse")
+inst_if_missing("rockchalk")
+inst_if_missing("boot")
+inst_if_missing("broom")
 #install.packages("~/Partial Attributable RIsk/Alte Pakete/pARtial_0.1.1.tar.gz", repos = NULL, type = "source")
 packageurl <- "https://cran.r-project.org/src/contrib/Archive/pARtial/pARtial_0.1.1.tar.gz"	
 if(length(which(installed.packages()[,1] == "pARtial")) == 0) install.packages(packageurl, repos=NULL, type="source")
-if(length(which(installed.packages()[,1] == "parallel")) == 0) install.packages("parallel")
-if(length(which(installed.packages()[,1] == "numDeriv")) == 0) install.packages("numDeriv")
-if(length(which(installed.packages()[,1] == "forcats")) == 0) install.packages("forcats")
-if(length(which(installed.packages()[,1] == "batchtools")) == 0) install.packages("batchtools")
-#if(length(which(installed.packages()[,1] == "microbenchmark")) == 0) install.packages("microbenchmark")
-#if(length(which(installed.packages()[,1] == "rlist")) == 0) install.packages("rlist")
+inst_if_missing("parallel")
+inst_if_missing("numDeriv")
+inst_if_missing("forcats")
+inst_if_missing("batchtools")
+#inst_if_missing("microbenchmark")
+#inst_if_missing("rlist")
 
 
 library(e1071)
