@@ -4,7 +4,7 @@
 
 source(file = "Functions.R")
 
-reg = makeRegistry(file.dir = NA)
+reg = makeRegistry(file.dir = "~/nobackup/bt_ki")
 #reg = makeRegistry(file.dir = NA, work.dir = "/work/smrnbrau", seed = 2506)
 
 
